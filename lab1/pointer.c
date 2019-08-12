@@ -103,8 +103,9 @@ int intSize() {
   int * intPtr1;
   int * intPtr2;
   // Write code to compute size of an integer.
-
-  return 2;
+  intPtr1 = intArray;
+  intPtr2 = intArray + 1;
+  return (char*)intPtr2 - (char*)intPtr1;
 }
 
 /*
@@ -115,8 +116,9 @@ int doubleSize() {
   double * doubPtr1;
   double * doubPtr2;
   // Write code to compute size of a double.
-
-  return 2;
+  doubPtr1 = doubArray;
+  doubPtr2 = doubArray + 1;
+  return (char*)doubPtr2 - (char*)doubPtr1;
 }
 
 /*
@@ -127,8 +129,9 @@ int pointerSize() {
   double ** ptrPtr1;
   double ** ptrPtr2;
   // Write code to compute size of a pointer.
-
-  return 2;
+  *ptrPtr1 = ptrArray;
+  *ptrPtr2 = ptrArray + 1;
+  return (char*)(*ptrPtr2) - (char*)(*ptrPtr1);
 }
 
 /*
@@ -145,7 +148,9 @@ int changeValue() {
   int * intPtr1 = intArray;
   // Remember not to use constants greater than 255.
   // Remember to use * to dereference.
-
+  int res = 255;
+  res += 96;
+  *(intPtr1 + 5) = res;
   return intArray[5];
 }
 
@@ -155,7 +160,13 @@ int changeValue() {
  * Operators / and % and loops are NOT allowed.
  */
 int withinSameBlock(int *ptr1, int *ptr2) {
-  return 2;
+  
+  int mask = 0xff;               // mask = 0000 0000 0000 0000 0000 0000 1111 1111
+  mask = (mask << 8) + mask;     // mask = 0000 0000 0000 0000 1111 1111 1111 1111
+  mask = (mask << 16) + 0xffc0;  // mask = 1111 1111 1111 1111 1111 1111 1100 0000 
+  int div1 = ((int)ptr1 & mask) >> 6;
+  int div2 = ((int)ptr2 & mask) >> 6;
+  return (div1 == div2); //return (ptr1 / 64) == (ptr2 / 64);
 }
 
 /*
@@ -166,5 +177,9 @@ int withinSameBlock(int *ptr1, int *ptr2) {
  * Operators / and % and loops are NOT allowed.
  */
 int withinArray(int * intArray, int size, int * ptr) {
-  return 2;
+  char * start = (char*)intArray;
+  char * end = start + 4 * (size - 1);
+  int sign1 = (((char*)ptr - start) >> 31) & 1; 
+  int sign2 = ((end - (char*)ptr) >> 31) & 1; 
+  return sign1 + sign2 == 0;
 }
